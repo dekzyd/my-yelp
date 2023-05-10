@@ -14,6 +14,9 @@
     "categories": {
       "auth": {
         "myyelpf4a25bd5": {}
+      },
+      "api": {
+        "myyelp": {}
       }
     }
   }
