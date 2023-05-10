@@ -26,23 +26,27 @@ export default function RestaurantCreateForm(props) {
     name: "",
     description: "",
     city: "",
+    image: "",
   };
   const [name, setName] = React.useState(initialValues.name);
   const [description, setDescription] = React.useState(
     initialValues.description
   );
   const [city, setCity] = React.useState(initialValues.city);
+  const [image, setImage] = React.useState(initialValues.image);
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
     setName(initialValues.name);
     setDescription(initialValues.description);
     setCity(initialValues.city);
+    setImage(initialValues.image);
     setErrors({});
   };
   const validations = {
     name: [{ type: "Required" }],
     description: [],
     city: [],
+    image: [],
   };
   const runValidationTasks = async (
     fieldName,
@@ -73,6 +77,7 @@ export default function RestaurantCreateForm(props) {
           name,
           description,
           city,
+          image,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -130,6 +135,7 @@ export default function RestaurantCreateForm(props) {
               name: value,
               description,
               city,
+              image,
             };
             const result = onChange(modelFields);
             value = result?.name ?? value;
@@ -156,6 +162,7 @@ export default function RestaurantCreateForm(props) {
               name,
               description: value,
               city,
+              image,
             };
             const result = onChange(modelFields);
             value = result?.description ?? value;
@@ -182,6 +189,7 @@ export default function RestaurantCreateForm(props) {
               name,
               description,
               city: value,
+              image,
             };
             const result = onChange(modelFields);
             value = result?.city ?? value;
@@ -195,6 +203,33 @@ export default function RestaurantCreateForm(props) {
         errorMessage={errors.city?.errorMessage}
         hasError={errors.city?.hasError}
         {...getOverrideProps(overrides, "city")}
+      ></TextField>
+      <TextField
+        label="Image"
+        isRequired={false}
+        isReadOnly={false}
+        value={image}
+        onChange={(e) => {
+          let { value } = e.target;
+          if (onChange) {
+            const modelFields = {
+              name,
+              description,
+              city,
+              image: value,
+            };
+            const result = onChange(modelFields);
+            value = result?.image ?? value;
+          }
+          if (errors.image?.hasError) {
+            runValidationTasks("image", value);
+          }
+          setImage(value);
+        }}
+        onBlur={() => runValidationTasks("image", image)}
+        errorMessage={errors.image?.errorMessage}
+        hasError={errors.image?.hasError}
+        {...getOverrideProps(overrides, "image")}
       ></TextField>
       <Flex
         justifyContent="space-between"

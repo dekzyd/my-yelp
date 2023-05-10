@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import "@aws-amplify/ui-react/styles.css";
-import { API } from "aws-amplify";
+import { API, Storage } from 'aws-amplify';
 import {
   Button,
   Flex,
   Heading,
+  Image,
   Text,
   TextField,
   View,
   withAuthenticator,
-} from "@aws-amplify/ui-react";
+} from '@aws-amplify/ui-react';
 import { listRestaurants } from "./graphql/queries";
 import {
   createRestaurant as createRestaurantMutation,
@@ -24,20 +25,33 @@ const App = ({ signOut }) => {
     fetchRestaurants();
   }, []);
 
+
   async function fetchRestaurants() {
     const apiData = await API.graphql({ query: listRestaurants });
     const restaurantsFromAPI = apiData.data.listRestaurants.items;
+    await Promise.all(
+      restaurantsFromAPI.map(async (restaurant) => {
+        if (restaurant.image) {
+          const url = await Storage.get(restaurant.name);
+          restaurant.image = url;
+        }
+        return restaurant;
+      })
+    );
     setRestaurants(restaurantsFromAPI);
   }
 
   async function createRestaurant(event) {
     event.preventDefault();
     const form = new FormData(event.target);
+    const image = form.get("image");
     const data = {
       name: form.get("name"),
       description: form.get("description"),
       city: form.get("city"),
+      image: image.name,
     };
+    if (!!data.image) await Storage.put(data.name, image);
     await API.graphql({
       query: createRestaurantMutation,
       variables: { input: data },
@@ -45,10 +59,12 @@ const App = ({ signOut }) => {
     fetchRestaurants();
     event.target.reset();
   }
+  
 
-  async function deleteRestaurant({ id }) {
+  async function deleteRestaurant({ id, name }) {
     const newRestaurants = restaurants.filter((restaurant) => restaurant.id !== id);
     setRestaurants(newRestaurants);
+    await Storage.remove(name);
     await API.graphql({
       query: deleteRestaurantMutation,
       variables: { input: { id } },
@@ -84,6 +100,12 @@ const App = ({ signOut }) => {
             variation="quiet"
             required
           />
+          <View
+            name="image"
+            as="input"
+            type="file"
+            style={{ alignSelf: "end" }}
+          />
           <Button type="submit" variation="primary">
             Create Restaurant
           </Button>
@@ -103,6 +125,13 @@ const App = ({ signOut }) => {
             </Text>
             <Text as="span">{restaurant.description}</Text>
             <Text as="span">{restaurant.city}</Text>
+            {restaurant.image && (
+              <Image
+                src={restaurant.image}
+                alt={`visual aid for ${restaurants.name}`}
+                style={{ width: 400 }}
+              />
+            )}
             <Button variation="link" onClick={() => deleteRestaurant(restaurant)}>
               Delete restaurant
             </Button>

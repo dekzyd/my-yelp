@@ -1,0 +1,14 @@
+{
+  "resourceName": "restaurantImg",
+  "policyUUID": "9564872f",
+  "bucketName": "myyelp6986ea5a015e41dd825c5b3425b2c1c4",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

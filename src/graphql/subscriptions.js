@@ -10,6 +10,7 @@ export const onCreateRestaurant = /* GraphQL */ `
       name
       description
       city
+      image
       createdAt
       updatedAt
     }
@@ -24,6 +25,7 @@ export const onUpdateRestaurant = /* GraphQL */ `
       name
       description
       city
+      image
       createdAt
       updatedAt
     }
@@ -38,6 +40,7 @@ export const onDeleteRestaurant = /* GraphQL */ `
       name
       description
       city
+      image
       createdAt
       updatedAt
     }
