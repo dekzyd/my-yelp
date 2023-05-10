@@ -101,6 +101,7 @@ const App = ({ signOut }) => {
               {restaurant.name}
             </Text>
             <Text as="span">{restaurant.description}</Text>
+            <Text as="span">{restaurant.city}</Text>
             <Button variation="link" onClick={() => deleteRestaurant(restaurant)}>
               Delete restaurant
             </Button>
